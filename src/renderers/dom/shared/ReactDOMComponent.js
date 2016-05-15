@@ -29,7 +29,6 @@ var ReactDOMButton = require('ReactDOMButton');
 var ReactDOMComponentFlags = require('ReactDOMComponentFlags');
 var ReactDOMComponentTree = require('ReactDOMComponentTree');
 var ReactDOMInput = require('ReactDOMInput');
-var ReactDOMInstrumentation = require('ReactDOMInstrumentation');
 var ReactDOMOption = require('ReactDOMOption');
 var ReactDOMSelect = require('ReactDOMSelect');
 var ReactDOMTextarea = require('ReactDOMTextarea');
@@ -254,6 +253,8 @@ if (__DEV__) {
     var contentDebugID = debugID + '#text';
     this._contentDebugID = contentDebugID;
     ReactInstrumentation.debugTool.onSetDisplayName(contentDebugID, '#text');
+    ReactInstrumentation.debugTool.onSetParent(contentDebugID, debugID);
+    ReactInstrumentation.debugTool.onBeforeMountComponent(contentDebugID);
     ReactInstrumentation.debugTool.onSetText(contentDebugID, '' + contentToUse);
     ReactInstrumentation.debugTool.onMountComponent(contentDebugID);
     ReactInstrumentation.debugTool.onSetChildren(debugID, [contentDebugID]);
@@ -579,10 +580,6 @@ ReactDOMComponent.Mixin = {
         validateDOMNesting.updatedAncestorInfo(parentInfo, this._tag, this);
     }
 
-    if (__DEV__) {
-      ReactDOMInstrumentation.debugTool.onMountDOMComponent(this._debugID, this._currentElement);
-    }
-
     var mountImage;
     if (transaction.useCreateElement) {
       var ownerDocument = hostContainerInfo._ownerDocument;
@@ -857,10 +854,6 @@ ReactDOMComponent.Mixin = {
       transaction,
       context
     );
-
-    if (__DEV__) {
-      ReactDOMInstrumentation.debugTool.onUpdateDOMComponent(this._debugID, this._currentElement);
-    }
 
     if (this._tag === 'select') {
       // <select> value update needs to occur after <option> children
